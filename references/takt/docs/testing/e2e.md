@@ -1,0 +1,156 @@
+# E2Eテスト概要
+このドキュメントは、E2Eテストの目的・前提条件・実行方法を短くまとめた索引です。
+E2Eテストを追加・変更した場合は、このドキュメントも更新してください。
+
+## 前提条件
+- `gh` CLI が利用可能で、対象GitHubアカウントでログイン済みであること。
+- `takt-testing` リポジトリが対象アカウントに存在すること（E2Eがクローンして使用）。
+- 必要に応じて `TAKT_E2E_PROVIDER` を設定すること（例: `claude` / `codex` / `opencode`）。
+- `TAKT_E2E_PROVIDER=opencode` の場合は `TAKT_E2E_MODEL` が必須（例: `opencode/big-pickle`）。
+- 実行時間が長いテストがあるため、タイムアウトに注意すること。
+- E2Eは `e2e/helpers/test-repo.ts` が `gh` でリポジトリをクローンし、テンポラリディレクトリで実行する。
+- 対話UIを避けるため、E2E環境では `TAKT_NO_TTY=1` を設定してTTYを無効化する。
+- 実行ディレクトリの形式（macOSの例）:
+  - リポジトリクローン: `$(os.tmpdir())/takt-e2e-repo-<random>/`
+  - 実行環境: `$(os.tmpdir())/takt-e2e-<runId>-<random>/`
+
+## E2E用config.yaml
+- E2Eのグローバル設定は `e2e/fixtures/config.e2e.yaml` を基準に生成する。
+- `createIsolatedEnv()` は毎回一時ディレクトリ配下（`$TAKT_CONFIG_DIR/config.yaml`）にこの基準設定を書き出す。
+- E2E実行中の `takt` 内通知音は `notification_sound: false` で無効化する。
+- `npm run test:e2e` は成否にかかわらず最後に1回ベルを鳴らし、終了コードはテスト結果を維持する。
+- 各スペックで `provider` や `concurrency` を変更する場合は、`updateIsolatedConfig()` を使って差分のみ上書きする。
+- `~/.takt/config.yaml` はE2Eでは参照されないため、通常実行の設定には影響しない。
+
+## 実行コマンド
+- `npm run test:e2e`: E2E全体を実行。
+- `npm run test:e2e:mock`: mock固定のE2Eのみ実行。
+- `npm run test:e2e:provider`: `claude` と `codex` の両方で実行。
+- `npm run test:e2e:provider:claude`: `TAKT_E2E_PROVIDER=claude` で実行。
+- `npm run test:e2e:provider:codex`: `TAKT_E2E_PROVIDER=codex` で実行。
+- `npm run test:e2e:provider:opencode`: `TAKT_E2E_PROVIDER=opencode` で実行（`TAKT_E2E_MODEL` 必須）。
+- `npm run test:e2e:all`: `mock` + `provider` を通しで実行。
+- `npm run test:e2e:claude`: `test:e2e:provider:claude` の別名。
+- `npm run test:e2e:codex`: `test:e2e:provider:codex` の別名。
+- `npm run test:e2e:opencode`: `test:e2e:provider:opencode` の別名。
+- `npx vitest run e2e/specs/add-and-run.e2e.ts`: 単体実行の例。
+
+## シナリオ一覧
+- Add task and run（`e2e/specs/add-and-run.e2e.ts`）
+  - 目的: `.takt/tasks.yaml` に pending タスクを配置し、`takt run` が実行できることを確認。
+  - LLM: 条件付き（`TAKT_E2E_PROVIDER` が `claude` / `codex` の場合に呼び出す）
+  - 手順（ユーザー行動/コマンド）:
+    - `.takt/tasks.yaml` にタスクを作成（`piece` は `e2e/fixtures/pieces/simple.yaml` を指定）。
+    - `takt run` を実行する。
+    - `README.md` に行が追加されることを確認する。
+    - 実行後にタスクが `tasks.yaml` で `completed` ステータスになることを確認する。
+- Worktree/Clone isolation（`e2e/specs/worktree.e2e.ts`）
+  - 目的: `--create-worktree yes` 指定で隔離環境に実行されることを確認。
+  - LLM: 条件付き（`TAKT_E2E_PROVIDER` が `claude` / `codex` の場合に呼び出す）
+  - 手順（ユーザー行動/コマンド）:
+    - `takt --task 'Add a line "worktree test" to README.md' --piece e2e/fixtures/pieces/simple.yaml --create-worktree yes` を実行する。
+    - コマンドが成功終了することを確認する。
+- Pipeline mode（`e2e/specs/pipeline.e2e.ts`）
+  - 目的: ブランチ作成→タスク実行→コミット→push→PR作成の一連フローを確認。
+  - LLM: 条件付き（`TAKT_E2E_PROVIDER` が `claude` / `codex` の場合に呼び出す）
+  - 手順（ユーザー行動/コマンド）:
+    - `takt --pipeline --task 'Create a file called hello.txt with the content "Hello World"' --piece e2e/fixtures/pieces/simple.yaml --auto-pr --repo <owner>/<repo>` を実行する。
+    - 出力に `completed` と `PR created` が含まれることを確認する。
+    - `gh pr list --repo <owner>/<repo>` でPRが作成されていることを確認する。
+- GitHub Issue processing（`e2e/specs/github-issue.e2e.ts`）
+  - 目的: Issue番号からパイプラインを起動してPR作成までを確認。
+  - LLM: 条件付き（`TAKT_E2E_PROVIDER` が `claude` / `codex` の場合に呼び出す）
+  - 手順（ユーザー行動/コマンド）:
+    - `gh issue create --title 'E2E Test Issue' --body 'Create a file called issue-test.txt with the content \"Issue resolved\"' --repo <owner>/<repo>` でIssueを作成する。
+    - 作成したIssue番号を控える。
+    - `takt --pipeline --issue <issue-number> --piece e2e/fixtures/pieces/simple.yaml --auto-pr --repo <owner>/<repo>` を実行する。
+    - 出力に `Issue #` / `completed` / `PR created` が含まれることを確認する。
+    - `gh pr list --repo <owner>/<repo>` でPR一覧にIssueタイトルがあることを確認する。
+- Direct task execution（`e2e/specs/direct-task.e2e.ts`）
+  - 目的: `--task` の直接実行が、プロンプトなしで完了することを確認。
+  - LLM: 呼び出さない（`--provider mock` 固定）
+  - 手順（ユーザー行動/コマンド）:
+    - `takt --task 'Create a file called noop.txt' --piece e2e/fixtures/pieces/mock-single-step.yaml --create-worktree no --provider mock` を実行する。
+    - `TAKT_MOCK_SCENARIO=e2e/fixtures/scenarios/execute-done.json` を設定する。
+    - 出力に `Piece completed` が含まれることを確認する。
+- Pipeline mode with --skip-git（`e2e/specs/pipeline-skip-git.e2e.ts`）
+  - 目的: `--skip-git` 指定時にGit操作を行わずパイプラインが完了することを確認。
+  - LLM: 呼び出さない（`--provider mock` 固定）
+  - 手順（ユーザー行動/コマンド）:
+    - `takt --pipeline --task 'Create a file called noop.txt' --piece e2e/fixtures/pieces/mock-single-step.yaml --skip-git --provider mock` を実行する。
+    - `TAKT_MOCK_SCENARIO=e2e/fixtures/scenarios/execute-done.json` を設定する。
+    - 出力に `completed` が含まれることを確認する。
+- Report + Judge phases（`e2e/specs/report-judge.e2e.ts`）
+  - 目的: reportフェーズとjudgeフェーズを通ることを確認（mockシナリオ）。
+  - LLM: 呼び出さない（`--provider mock` 固定）
+  - 手順（ユーザー行動/コマンド）:
+    - `takt --task 'Create a short report and finish' --piece e2e/fixtures/pieces/report-judge.yaml --create-worktree no --provider mock` を実行する。
+    - `TAKT_MOCK_SCENARIO=e2e/fixtures/scenarios/report-judge.json` を設定する。
+    - 出力に `Piece completed` が含まれることを確認する。
+- Add task（`e2e/specs/add.e2e.ts`）
+  - 目的: `takt add` がIssue参照からタスクファイルを生成できることを確認。
+  - LLM: 呼び出さない（`provider: mock` + `TAKT_MOCK_SCENARIO` 固定）
+  - 手順（ユーザー行動/コマンド）:
+    - `gh issue create ...` でIssueを作成する。
+    - `TAKT_MOCK_SCENARIO=e2e/fixtures/scenarios/add-task.json` を設定する。
+    - `takt add '#<issue>'` を実行し、`Create worktree?` に `n` で回答する。
+    - `.takt/tasks.yaml` に `task_dir` が保存され、`.takt/tasks/{slug}/order.md` が生成されることを確認する。
+- Watch tasks（`e2e/specs/watch.e2e.ts`）
+  - 目的: `takt watch` が監視中に追加されたタスクを実行できることを確認。
+  - LLM: 呼び出さない（`--provider mock` 固定）
+  - 手順（ユーザー行動/コマンド）:
+    - `takt watch --provider mock` を起動する。
+    - `.takt/tasks.yaml` に pending タスクを追加する（`piece` に `e2e/fixtures/pieces/mock-single-step.yaml` を指定）。
+    - 出力に `Task "watch-task" completed` が含まれることを確認する。
+    - `Ctrl+C` で終了する。
+- Run tasks graceful shutdown on SIGINT（`e2e/specs/run-sigint-graceful.e2e.ts`）
+  - 目的: `takt run` を並列実行中に `Ctrl+C` した際、新規クローン投入を止めてグレースフルに終了することを確認。
+  - LLM: 呼び出さない（`--provider mock` 固定）
+  - 手順（ユーザー行動/コマンド）:
+    - `.takt/tasks.yaml` に `worktree: true` の pending タスクを3件投入する（`concurrency: 2`）。
+    - 各タスクの `piece` に `e2e/fixtures/pieces/mock-slow-multi-step.yaml` を指定する。
+    - `TAKT_MOCK_SCENARIO=e2e/fixtures/scenarios/run-sigint-parallel.json` を設定する。
+    - `takt run --provider mock` を起動し、`=== Running Piece:` が出たら `Ctrl+C` を送る。
+    - 3件目タスク（`sigint-c`）が開始されないことを確認する。
+    - `=== Tasks Summary ===` 以降に新規タスク開始やクローン作成ログが出ないことを確認する。
+- Runtime config injection with provider（`e2e/specs/runtime-config-provider.e2e.ts`）
+  - 目的: `config.yaml` の `runtime.prepare` が provider 実行時に反映される正例と、未設定時の失敗再現（env未注入）を確認。
+  - LLM: 条件付き（`TAKT_E2E_PROVIDER` が `claude` / `codex` / `opencode` の場合に実行、未指定時は skip）
+  - 手順（ユーザー行動/コマンド）:
+    - E2E用 `config.yaml` に `runtime.prepare: [gradle, node]` を設定する。
+    - `takt --task '<gradle/npm を実行する指示>' --piece e2e/fixtures/pieces/simple.yaml --create-worktree no` を実行する。
+    - 正例では、作業リポジトリに `.runtime/env.sh` と `.runtime/{tmp,cache,config,state,gradle,npm}` が作成されていることを確認する。
+    - 負例（`runtime.prepare` 未設定）では、`GRADLE_USER_HOME is required` と npm キャッシュ書き込み失敗が出力され、`.runtime/env.sh` が生成されないことを確認する。
+- List tasks non-interactive（`e2e/specs/list-non-interactive.e2e.ts`）
+  - 目的: `takt list` の非対話モードでブランチ操作ができることを確認。
+  - LLM: 呼び出さない（LLM不使用の操作のみ）
+  - 手順（ユーザー行動/コマンド）:
+    - `takt list --non-interactive --action delete --branch <branch> --yes` を実行する。
+    - 対象ブランチが削除されることを確認する。
+    - `takt list --non-interactive --action diff --branch <branch>` で差分統計が出力されることを確認する。
+    - `takt list --non-interactive --action try --branch <branch>` で変更がステージされることを確認する。
+    - `takt list --non-interactive --action merge --branch <branch>` でブランチがマージされ削除されることを確認する。
+- Config permission mode（`e2e/specs/cli-config.e2e.ts`）
+  - 目的: `takt config` でパーミッションモードの切り替えと永続化を確認。
+  - LLM: 呼び出さない（LLM不使用の操作のみ）
+  - 手順（ユーザー行動/コマンド）:
+    - `takt config default` を実行し、`Switched to: default` が出力されることを確認する。
+    - `takt config sacrifice-my-pc` を実行し、`Switched to: sacrifice-my-pc` が出力されることを確認する。
+    - `takt config sacrifice-my-pc` 実行後、`.takt/config.yaml` に `permissionMode: sacrifice-my-pc` が保存されていることを確認する。
+    - `takt config invalid-mode` を実行し、`Invalid mode` が出力されることを確認する。
+- Reset categories（`e2e/specs/cli-reset-categories.e2e.ts`）
+  - 目的: `takt reset categories` でカテゴリオーバーレイのリセットを確認。
+  - LLM: 呼び出さない（LLM不使用の操作のみ）
+  - 手順（ユーザー行動/コマンド）:
+    - `takt reset categories` を実行する。
+    - 出力に `reset` を含むことを確認する。
+    - `$TAKT_CONFIG_DIR/preferences/piece-categories.yaml` が存在し `piece_categories: {}` を含むことを確認する。
+- Export Claude Code Skill（`e2e/specs/cli-export-cc.e2e.ts`）
+  - 目的: `takt export-cc` でClaude Code Skillのデプロイを確認。
+  - LLM: 呼び出さない（LLM不使用の操作のみ）
+  - 手順（ユーザー行動/コマンド）:
+    - `HOME` を一時ディレクトリに設定する。
+    - `takt export-cc` を実行する。
+    - 出力に `ファイルをデプロイしました` を含むことを確認する。
+    - `$HOME/.claude/skills/takt/SKILL.md` が存在することを確認する。
+    - `$HOME/.claude/skills/takt/pieces/` および `$HOME/.claude/skills/takt/personas/` ディレクトリが存在し、それぞれ少なくとも1ファイルを含むことを確認する。

@@ -1,0 +1,71 @@
+/**
+ * Core type definitions for TAKT orchestration system
+ *
+ * This file re-exports all types from categorized sub-modules.
+ * Consumers import from './types.js' — no path changes needed.
+ */
+
+// Status and classification types
+export type {
+  AgentType,
+  Status,
+  RuleMatchMethod,
+  PermissionMode,
+} from './status.js';
+
+// Agent response
+export type {
+  AgentResponse,
+} from './response.js';
+
+// Session state (authoritative definition with createSessionState)
+export type {
+  SessionState,
+} from './session.js';
+
+// Part decomposition
+export type {
+  PartDefinition,
+  PartResult,
+  TeamLeaderConfig,
+} from './part.js';
+
+// Piece configuration and runtime state
+export type {
+  PieceRule,
+  OutputContractItem,
+  OutputContractEntry,
+  McpServerConfig,
+  RuntimePreparePreset,
+  RuntimePrepareEntry,
+  PieceRuntimeConfig,
+  MovementProviderOptions,
+  PieceMovement,
+  ArpeggioMovementConfig,
+  ArpeggioMergeMovementConfig,
+  LoopDetectionConfig,
+  LoopMonitorConfig,
+  LoopMonitorJudge,
+  LoopMonitorRule,
+  PieceConfig,
+  PieceState,
+} from './piece-types.js';
+
+
+// Provider permission profiles
+export type {
+  ProviderProfileName,
+  ProviderPermissionProfile,
+  ProviderPermissionProfiles,
+} from './provider-profiles.js';
+
+// Configuration types (global and project)
+export type {
+  CustomAgentConfig,
+  DebugConfig,
+  ObservabilityConfig,
+  Language,
+  PipelineConfig,
+  GlobalConfig,
+  ProjectConfig,
+} from './global-config.js';

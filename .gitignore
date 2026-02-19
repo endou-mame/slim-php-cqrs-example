@@ -1,0 +1,13 @@
+.idea/
+
+/.claude/settings.local.json
+/.codex/sessions/
+/.codex/log/
+/.codex/tmp/
+/.codex/shell_snapshots/*.sh
+/.codex/*.json
+/.codex/*.jsonl
+/.serena/cache/
+
+
+

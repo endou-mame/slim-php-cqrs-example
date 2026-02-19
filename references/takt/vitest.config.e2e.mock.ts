@@ -1,0 +1,40 @@
+import { defineConfig } from 'vitest/config';
+import { e2eBaseTestConfig } from './vitest.config.e2e.base';
+
+export default defineConfig({
+  test: {
+    ...e2eBaseTestConfig,
+    include: [
+      'e2e/specs/direct-task.e2e.ts',
+      'e2e/specs/pipeline-skip-git.e2e.ts',
+      'e2e/specs/pipeline-local-repo.e2e.ts',
+      'e2e/specs/report-judge.e2e.ts',
+      'e2e/specs/report-file-output.e2e.ts',
+      'e2e/specs/add.e2e.ts',
+      'e2e/specs/watch.e2e.ts',
+      'e2e/specs/list-non-interactive.e2e.ts',
+      'e2e/specs/multi-step-parallel.e2e.ts',
+      'e2e/specs/multi-step-sequential.e2e.ts',
+      'e2e/specs/run-sigint-graceful.e2e.ts',
+      'e2e/specs/piece-error-handling.e2e.ts',
+      'e2e/specs/cycle-detection.e2e.ts',
+      'e2e/specs/run-multiple-tasks.e2e.ts',
+      'e2e/specs/task-status-persistence.e2e.ts',
+      'e2e/specs/session-log.e2e.ts',
+      'e2e/specs/model-override.e2e.ts',
+      'e2e/specs/provider-error.e2e.ts',
+      'e2e/specs/error-handling.e2e.ts',
+      'e2e/specs/cli-catalog.e2e.ts',
+      'e2e/specs/cli-prompt.e2e.ts',
+      'e2e/specs/cli-switch.e2e.ts',
+      'e2e/specs/cli-help.e2e.ts',
+      'e2e/specs/cli-clear.e2e.ts',
+      'e2e/specs/cli-config.e2e.ts',
+      'e2e/specs/cli-reset-categories.e2e.ts',
+      'e2e/specs/cli-export-cc.e2e.ts',
+      'e2e/specs/eject.e2e.ts',
+      'e2e/specs/quiet-mode.e2e.ts',
+      'e2e/specs/task-content-file.e2e.ts',
+    ],
+  },
+});

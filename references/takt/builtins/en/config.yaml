@@ -1,0 +1,105 @@
+# TAKT global configuration sample
+# Location: ~/.takt/config.yaml
+
+# ---- Core ----
+language: en
+default_piece: default
+log_level: info
+
+# ---- Provider ----
+# provider: claude | codex | opencode | mock
+provider: claude
+
+# Model (optional)
+# Claude examples: opus, sonnet, haiku
+# Codex examples: gpt-5.2-codex, gpt-5.1-codex
+# OpenCode format: provider/model
+# model: sonnet
+
+# Per-persona provider override
+# persona_providers:
+#   coder: codex
+#   reviewer: claude
+
+# Provider-specific movement permission policy
+# Priority:
+# 1) project provider_profiles override
+# 2) global provider_profiles override
+# 3) project provider_profiles default
+# 4) global provider_profiles default
+# 5) movement.required_permission_mode (minimum floor)
+# provider_profiles:
+#   codex:
+#     default_permission_mode: full
+#     movement_permission_overrides:
+#       ai_review: readonly
+#   claude:
+#     default_permission_mode: edit
+
+# Provider-specific runtime options
+# provider_options:
+#   codex:
+#     network_access: true
+#   claude:
+#     sandbox:
+#       allow_unsandboxed_commands: true
+
+# ---- API Keys ----
+# Environment variables take priority:
+# TAKT_ANTHROPIC_API_KEY / TAKT_OPENAI_API_KEY / TAKT_OPENCODE_API_KEY
+# anthropic_api_key: ""
+# openai_api_key: ""
+# opencode_api_key: ""
+
+# ---- Runtime ----
+# Global runtime preparation (piece_config.runtime overrides this)
+# runtime:
+#   prepare:
+#     - gradle
+#     - node
+
+# ---- Execution ----
+# worktree_dir: ~/takt-worktrees
+# auto_pr: false
+# prevent_sleep: false
+
+# ---- Run Loop ----
+# concurrency: 1
+# task_poll_interval_ms: 500
+# interactive_preview_movements: 3
+# branch_name_strategy: romaji
+
+# ---- Output ----
+# minimal_output: false
+# notification_sound: true
+# notification_sound_events:
+#   iteration_limit: true
+#   piece_complete: true
+#   piece_abort: true
+#   run_complete: true
+#   run_abort: true
+# observability:
+#   provider_events: true
+
+# ---- Builtins ----
+# enable_builtin_pieces: true
+# disabled_builtins:
+#   - magi
+
+# ---- Pipeline ----
+# pipeline:
+#   default_branch_prefix: "takt/"
+#   commit_message_template: "feat: {title} (#{issue})"
+#   pr_body_template: |
+#     ## Summary
+#     {issue_body}
+#     Closes #{issue}
+
+# ---- Preferences ----
+# bookmarks_file: ~/.takt/preferences/bookmarks.yaml
+# piece_categories_file: ~/.takt/preferences/piece-categories.yaml
+
+# ---- Debug ----
+# debug:
+#   enabled: false
+#   log_file: ~/.takt/logs/debug.log
