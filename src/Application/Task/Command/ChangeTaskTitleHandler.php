@@ -7,11 +7,11 @@ namespace App\Application\Task\Command;
 use App\Application\Task\Port\TaskEventStore;
 use App\Application\Task\Port\TaskReadModel;
 use App\Domain\Task\Task;
-use App\Domain\Task\ValueObject\TaskId;
-use App\Domain\Task\ValueObject\TaskTitle;
+use App\Domain\Task\TaskId;
+use App\Domain\Task\TaskTitle;
 use EndouMame\PhpMonad\Result;
 use EndouMame\PhpValueObject\Error\ValueObjectError;
-use App\Domain\Task\Error\TaskError;
+use App\Domain\Task\TaskError;
 use function EndouMame\PhpMonad\Result\err;
 
 readonly class ChangeTaskTitleHandler

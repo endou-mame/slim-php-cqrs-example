@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Infrastructure\ReadModel;
 
 use App\Application\Task\Port\TaskReadModel;
-use App\Domain\Task\Event\TaskCompleted;
-use App\Domain\Task\Event\TaskCreated;
-use App\Domain\Task\Event\TaskTitleChanged;
-use App\Domain\Task\ValueObject\TaskStatus;
+use App\Domain\Task\TaskCompleted;
+use App\Domain\Task\TaskCreated;
+use App\Domain\Task\TaskTitleChanged;
+use App\Domain\Task\TaskStatus;
 
 class InMemoryTaskReadModel implements TaskReadModel
 {

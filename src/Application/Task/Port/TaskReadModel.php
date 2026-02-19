@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Task\Port;
 
-use App\Domain\Task\Event\TaskCompleted;
-use App\Domain\Task\Event\TaskCreated;
-use App\Domain\Task\Event\TaskTitleChanged;
+use App\Domain\Task\TaskCompleted;
+use App\Domain\Task\TaskCreated;
+use App\Domain\Task\TaskTitleChanged;
 
 interface TaskReadModel
 {

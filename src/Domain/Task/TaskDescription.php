@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Task\ValueObject;
+namespace App\Domain\Task;
 
 use Override;
 use EndouMame\PhpValueObject\String\StringValue;

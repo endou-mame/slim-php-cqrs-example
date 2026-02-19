@@ -2,10 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Task\Event;
-
-use App\Domain\Task\ValueObject\TaskId;
-use App\Domain\Task\ValueObject\TaskTitle;
+namespace App\Domain\Task;
 
 readonly class TaskTitleChanged
 {

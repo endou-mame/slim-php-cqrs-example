@@ -7,14 +7,14 @@ namespace Tests\Unit\Domain\Task;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use App\Domain\Task\Task;
-use App\Domain\Task\ValueObject\TaskId;
-use App\Domain\Task\ValueObject\TaskTitle;
-use App\Domain\Task\ValueObject\TaskDescription;
-use App\Domain\Task\ValueObject\TaskStatus;
-use App\Domain\Task\Error\TaskError;
-use App\Domain\Task\Event\TaskCreated;
-use App\Domain\Task\Event\TaskCompleted;
-use App\Domain\Task\Event\TaskTitleChanged;
+use App\Domain\Task\TaskId;
+use App\Domain\Task\TaskTitle;
+use App\Domain\Task\TaskDescription;
+use App\Domain\Task\TaskStatus;
+use App\Domain\Task\TaskError;
+use App\Domain\Task\TaskCreated;
+use App\Domain\Task\TaskCompleted;
+use App\Domain\Task\TaskTitleChanged;
 
 final class TaskTest extends TestCase
 {

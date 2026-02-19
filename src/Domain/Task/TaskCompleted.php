@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Task\Event;
-
-use App\Domain\Task\ValueObject\TaskId;
+namespace App\Domain\Task;
 
 readonly class TaskCompleted
 {

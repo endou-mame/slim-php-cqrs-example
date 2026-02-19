@@ -5,14 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Task;
 
 use EndouMame\PhpMonad\Result;
-use App\Domain\Task\ValueObject\TaskId;
-use App\Domain\Task\ValueObject\TaskTitle;
-use App\Domain\Task\ValueObject\TaskDescription;
-use App\Domain\Task\ValueObject\TaskStatus;
-use App\Domain\Task\Error\TaskError;
-use App\Domain\Task\Event\TaskCreated;
-use App\Domain\Task\Event\TaskCompleted;
-use App\Domain\Task\Event\TaskTitleChanged;
 
 readonly class Task
 {

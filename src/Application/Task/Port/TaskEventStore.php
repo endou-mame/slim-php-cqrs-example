@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Task\Port;
 
 use App\Domain\Task\Task;
-use App\Domain\Task\ValueObject\TaskId;
+use App\Domain\Task\TaskId;
 use EndouMame\PhpMonad\Option;
 
 interface TaskEventStore

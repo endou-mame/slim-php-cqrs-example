@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Task\Error;
+namespace App\Domain\Task;
 
 enum TaskError: string
 {

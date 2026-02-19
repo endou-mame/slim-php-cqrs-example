@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Domain\Task\ValueObject;
+namespace Tests\Unit\Domain\Task;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
-use App\Domain\Task\ValueObject\TaskTitle;
+use App\Domain\Task\TaskTitle;
 
 final class TaskTitleTest extends TestCase
 {

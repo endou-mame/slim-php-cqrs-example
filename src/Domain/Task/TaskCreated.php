@@ -2,12 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Task\Event;
-
-use App\Domain\Task\ValueObject\TaskId;
-use App\Domain\Task\ValueObject\TaskTitle;
-use App\Domain\Task\ValueObject\TaskDescription;
-use App\Domain\Task\ValueObject\TaskStatus;
+namespace App\Domain\Task;
 
 readonly class TaskCreated
 {
