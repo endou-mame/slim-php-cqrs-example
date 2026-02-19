@@ -1,0 +1,33 @@
+{
+    "name": "endou-mame/slim-php-cqrs-example",
+    "description": "CQRS + Event Sourcing + Onion Architecture task application with Slim 4",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.4",
+        "slim/slim": "^4.14",
+        "slim/psr7": "^1.7",
+        "php-di/php-di": "^7.0",
+        "endou-mame/php-monad": "^1.0",
+        "endou-mame/php-value-object": "^0.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0",
+        "phpstan/phpstan": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-di/php-di": true
+        }
+    }
+}
